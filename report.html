@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Reports</title>
+   <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Reports</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: maroon
+        }
+        .container {
+            width: 80%;
+            margin: 40px auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: green;
+        }
+  button {
+            background-color: yellow;
+            hoover: blue;
+        }      
+        
+        
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</head>
+<body>
+ <body>
+     <div id="login-container">
+        <input type="password" id="password-input" placeholder="Enter password">
+        <button id="login-btn">Login</button>
+        <p id="error-msg"></p>
+    </div>
+    <div id="app-container" style="display: none;">
+        <h1>Bwaila Secondary School Reports</h1>
+        <div class="container">
+    <h1>Bwaila Secondary School Reports</h1>
+    
+        <input type="text" id="student-name" placeholder="Enter student name">
+        <button id="add-student-btn">Add Student</button>
+        <div id="students-container"></div>
+        <button id="generate-reports-btn">Generate Reports</button>
+        <div id="reports"></div>
+        <button id="send-report-btn">Send Report</button>
+        <button id="save-report-btn">Save Report</button>
+        <button id="print-report-btn">Print Report</button>
+        <button id="dl-pdf-btn">download Report as pdf</button>
+        <script src="html2pdf.report.js"></script>
+    </div>
+   
+    <!-- your HTML content here -->
+
+    <script>
+        // your JavaScript code here
+
+        function sendReport() {
+            if (Object.keys(selectedReports).length === 0) {
+                alert('Please select reports to send');
+                return;
+            }
+            const phoneOrEmail = prompt('Enter phone number or email:');
+            if (!phoneOrEmail) {
+                alert('Please enter phone number or email');
+                return;
+            }
+            let selectedReportsHtml = '';
+            for (const report in selectedReports) {
+                selectedReportsHtml += selectedReports[report];
+            }
+
+            Generate PDF
+            const doc = new jsPDF();
+            doc.fromHTML(selectedReportsHtml, 15, 15, {
+                'width': 170,
+                'elementHandlers': {
+                    '                                           
+                        return true;
+                    }
+                }
+            });
+            const pdfData = doc.output('blob');
+
+            if (phoneOrEmail.includes('@')) {
+                                 
+                const mailtoLink = `mailto:${phoneOrEmail}?subject=School Report&body=Please find the report attached.`;
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(pdfData);
+                a.download = 'report.pdf';
+                a.click();
+                window.open(mailtoLink, '_blank');
+            } else {
+                                                                                            
+                alert('Please note that WhatsApp doesn\'t support sending files directly. You will need to download the report and send it manually.');
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(pdfData);
+                a.download = 'report.pdf';
+                a.click();
+                const url = `https://wa.me/${phoneOrEmail}?text=Please find the report attached.`;
+                window.open(url, '_blank');
+            }
+        }
+
+        // rest of your JavaScript code
+    </script>
+</body>
+
+</head>
+
+    <script>
+        let students = {};
+        let reports = {};
+        let selectedReports = {};
+        const password = 'malick';
+        const loginBtn = document.getElementById('login-btn');
+        const passwordInput = document.getElementById('password-input');
+        const errorMsg = document.getElementById('error-msg');
+        const appContainer = document.getElementById('app-container');
+        const loginContainer = document.getElementById('login-container');
+
+        loginBtn.addEventListener('click', () => {
+            if (passwordInput.value === password) {
+                loginContainer.style.display = 'none';
+                appContainer.style.display = 'block';
+            } else {
+                errorMsg.textContent = 'Incorrect password';
+            }
+        });
+
+        
+
+        document.getElementById('add-student-btn').addEventListener('click', addStudent);
+        document.getElementById('generate-reports-btn').addEventListener('click', generateReports);
+        document.getElementById('send-report-btn').addEventListener('click', sendReport);
+        document.getElementById('save-report-btn').addEventListener('click', saveReport);
+        document.getElementById('print-report-btn').addEventListener('click', printReport);
+document.getElementById('dl-pdf-btn').addEventListener('click', downloadpdf).onclick = function () { 
+var element = document.getElementById()
+        }
+    
+
+        function addStudent() {
+            const studentName = document.getElementById('student-name').value;
+            if (!studentName) {
+                alert('Please enter student name');
+                return;
+            }
+
+            students[studentName] = {};
+            addSubjectsForm(studentName);
+            document.getElementById('student-name').value = '';
+        }
+
+        function addSubjectsForm(studentName) {
+            const studentsContainer = document.getElementById('students-container');
+            const studentDiv = document.createElement('div');
+            studentDiv.innerHTML = `
+                <h3>${studentName}</h3>
+                <input type="text" placeholder="Enter subject" id="subject-${studentName}">
+                <input type="number" placeholder="Enter score" id="score-${studentName}">
+                <button onclick="addSubject('${studentName}')">Add Subject</button>
+                <table id="subjects-table-${studentName}">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Score</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subjects-body-${studentName}"></tbody>
+                </table>
+            `;
+            studentsContainer.appendChild(studentDiv);
+        }
+
+        function addSubject(studentName) {
+            const subject = document.getElementById(`subject-${studentName}`).value;
+            const score = parseInt(document.getElementById(`score-${studentName}`).value);
+            if (!subject || isNaN(score)) {
+                alert('Please enter valid subject and score');
+                return;
+            }
+
+            students[studentName][subject] = score;
+            updateSubjectsTable(studentName);
+            document.getElementById(`subject-${studentName}`).value = '';
+            document.getElementById(`score-${studentName}`).value = '';
+        }
+
+        function updateSubjectsTable(studentName) {
+            const tableBody = document.getElementById(`subjects-body-${studentName}`);
+            tableBody.innerHTML = '';
+            let totalScore = 0;
+            for (const subject in students[studentName]) {
+                const score = students[studentName][subject];
+                const points = getPoints(score);
+                totalScore += score;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${subject}</td>
+                    <td>${score}</td>
+                    <td>${points}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+        }
+
+        function getPoints(score) {
+            if (score >= 80) return 1;
+            if (score >= 70) return 2;
+            if (score >= 60) return 3;
+            if (score >= 50) return 4;
+            if (score >= 40) return 5;
+            if (score >= 30) return 6;
+            if (score >= 20) return 7;
+            return 8;
+        }
+
+        function generateReports() {
+            const reportsDiv = document.getElementById('reports');
+            reportsDiv.innerHTML = '';
+
+            const studentScores = {};
+            for (const student in students) {
+                let totalScore = 0;
+                let totalPoints = 0;
+                for (const subject in students[student]) {
+                    totalScore += students[student][subject];
+                    totalPoints += getPoints(students[student][subject]);
+                }
+                studentScores[student] = { totalScore, totalPoints };
+            }
+
+            const sortedStudents = Object.entries(studentScores).sort((a, b) => b[1].totalScore - a[1].totalScore);
+
+            sortedStudents.forEach((student, index) => {
+                const studentName = student[0];
+                const score = student[1].totalScore;
+                const points = student[1].totalPoints;
+                const rank = index + 1;
+                const result = score >= 350 ? 'Pass' : 'Fail';
+                const report = `
+                
+                    <div id="report-${studentName}">
+                        <h2>School Report For ${studentName}</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Score</th>
+                                    <th>Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.keys(students[studentName]).map(subject => `
+                                    <tr>
+                                        <td>${subject}</td>
+                                        <td>${students[studentName][subject]}</td>
+                                        <td>${getPoints(students[studentName][subject])}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        <p>Total Score: ${score}</p>
+                        <p>Total Points: ${points}</p>
+                        <p>Position Number: ${rank} out of ${sortedStudents.length}</p>
+                        <p>Result: ${result}</p>
+                        <input type="checkbox" id="select-${studentName}" onclick="selectReport('${studentName}')">
+                        <label for="select-${studentName}"><center> Bwaila School Report </center></label>
+                        <hr>
+                    </div>
+                `;
+                reportsDiv.innerHTML += report;
+                reports[studentName] = report;
+            });
+        }
+
+        function selectReport(studentName) {
+            if (document.getElementById(`select-${studentName}`).checked) {
+                selectedReports[studentName] = reports[studentName];
+            } else {
+                delete selectedReports[studentName];
+            }
+        }
+
+        function sendReport() {
+            if (Object.keys(selectedReports).length === 0) {
+                alert('Please select reports to send');
+                return;
+            }
+            const phoneOrEmail = prompt('Enter phone number or email:');
+            if (!phoneOrEmail) {
+                alert('Please enter phone number or email');
+                return;
+            }
+            let selectedReportsHtml = '';
+            for (const report in selectedReports) {
+                selectedReportsHtml += selectedReports[report];
+            }
+            if (phoneOrEmail.includes('@')) {
+                // Send via email
+                const mailtoLink = `mailto:${phoneOrEmail}?subject=School Report&body=${encodeURIComponent(selectedReportsHtml)}`;
+                window.open(mailtoLink, '_blank');
+            } else {
+                // Send via WhatsApp
+                const url = `https://wa.me/${phoneOrEmail}?text=${encodeURIComponent(selectedReportsHtml)}`;
+                window.open(url, '_blank');
+            }
+        }
+
+        function saveReport() {
+            if (Object.keys(selectedReports).length === 0) {
+                alert('Please select reports to save');
+                return;
+            }
+            let selectedReportsHtml = '';
+            for (const report in selectedReports) {
+                selectedReportsHtml += selectedReports[report];
+            }
+            localStorage.setItem('report', selectedReportsHtml);
+            alert('Report saved to local storage');
+        }
+
+        function printReport() {
+            if (Object.keys(selectedReports).length === 0) {
+                alert('Please select reports to print');
+                return;
+            }
+            let selectedReportsHtml = '';
+            for (const report in selectedReports) {
+                selectedReportsHtml += selectedReports[report];
+            }
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(selectedReportsHtml);
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        function downloadReport() {
+            
+        }
+        
+        
+    </script>
+</body>
+</html>
